@@ -11,10 +11,10 @@ body{
 
 h1{
     flex: 1;
-    color: #5BC0EB;
+    color: #5bc0eb;
     font-size: 60px;
     border: 0;
-    margin: 40px 0px 0px 0px;
+    margin: 40px 0px 0px 0px;   
     padding: 20px 20px 0px 20px;
 }
 
@@ -114,4 +114,10 @@ p{
 .score{
     display: flex;
     gap: 20px;
+}
+
+p[name="winner"]{
+    flex: 2;
+    color: rgb(1, 255, 82);
+    font-weight: bold;
 }

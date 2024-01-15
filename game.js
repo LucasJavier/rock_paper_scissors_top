@@ -18,78 +18,108 @@ function getComputerChoice(){
 
 }
 
-function playRound(playerSelection, computerSelection){
-
-   roundCounter = 0;
-   if(playerSelection === null) {
-        console.log("You didn't pick!!! Hence you lose :(");
-        return 0;
-   }
-   let general_playerSelection = playerSelection.toLowerCase();
-   while(general_playerSelection === computerSelection) {
-        console.log("It's a tie!!!");
-        ++roundCounter;
-        console.log("Round number " + roundCounter);
-        playerSelection = prompt("Choose: Rock, Paper, or Scissors");
-        if(playerSelection === null) {
-            console.log("You didn't pick!!! Hence you lose :(");
-            return 0;
-        }
-        general_playerSelection = playerSelection.toLowerCase();
-   }
-   if(general_playerSelection === "rock"){
-        if(computerSelection === "Scissors") {
-            console.log("You Win!!! Rock beats Scissors");
-            return 1;
-        }
-        else {
-            console.log("You lost :(, Paper beats Rock");
-            return 0;
-        }
-   }
-   else if(general_playerSelection === "paper"){
-        if(computerSelection === "rock") {
-            console.log("You Win!!! Paper beats Rock");
-            return 1;
-        }
-        else {
-            console.log("You lost :(, Scissors beats Paper");
-            return 0;
-        }
-   }
-   else{
-        if(computerSelection === "paper") {
-            console.log("You Win!!! Scissors beats Paper");
-            return 1;
-        }
-        else {
-            console.log("You lost :(, Rock beats Scissors");
-            return 0;
-        }
-   }
-
-}
-
-function Game(){
-
-    let player_Wins = 0;
-    let computer_Wins = 0;
-    let winner;
-
-    for(i = 0; i < 5; i++){
-        let player_selection = prompt("Choose: Rock, Paper, or Scissors");
-        let computer_selection = getComputerChoice();
-        winner = playRound(player_selection,computer_selection,player_Wins,computer_Wins);
-        if(winner === 0) ++computer_Wins;
-        else ++player_Wins;
-        if(computer_Wins === 3){
-            console.log("Computer Wins!!!");
-            break;
-        }
-        else if(player_Wins === 3){
-            console.log("Player Wins!!!");
-            break;
-        }
+function game(computerSelection,playerSelection){
+    if(computerSelection === playerSelection) return 0;
+    if(playerSelection === "rock"){
+        if(computerSelection === "scissors") return 1;
+        return 2;
     }
-
+    if(playerSelection === "paper"){
+        if(computerSelection === "rock") return 1;
+        return 2;
+    }
+    if(computerSelection === "paper") return 1;
+    return 2;
 }
+
+function getRemainElements(){
+    let myObjects = [];
+    myObjects.push(document.querySelector("body"));
+    myObjects.push(document.querySelector("h1"));
+    myObjects.push(document.querySelector("h3"));
+    myObjects.push(document.querySelector("label"));
+    myObjects.push(document.querySelectorAll("p"));
+    myObjects.push(document.querySelectorAll("footer > label"));
+    myObjects.push(document.querySelectorAll("button"));
+    myObjects.push(document.querySelector(".displayResult > .score > label[name='user']"));
+    myObjects.push(document.querySelector(".displayResult > .score > label[name='computer']"));
+    myObjects.push(document.querySelector(".decision > p[name='winner']"));  
+    return myObjects;
+}
+
+function displayWinWindow(winner){
+    objectsToChange[0].style.backgroundColor = "rgb(98,197,138)";
+    objectsToChange[1].style.color = "#6a4a22";
+    objectsToChange[2].style.color = "#160081";
+    objectsToChange[3].style.color = "#160081";
+    objectsToChange[4].forEach(p => p.style.color = "#352108");
+    objectsToChange[5].forEach(label => label.style.color = "#720000");
+    objectsToChange[6].forEach(button => {
+        button.style.color = "010101";
+        button.disabled = true;});
+    objectsToChange[6][3].disabled = false;
+    objectsToChange[7].style.color = "white";
+    objectsToChange[8].style.color = "white";
+    objectsToChange[9].style.color = "rgba(0,58,137)";
+    if(winner === 2) objectsToChange[9].textContent = "Computer Wins!!!";
+    else objectsToChange[9].textContent = "You Wins!!!";
+}
+
+function restartGame(){
+    objectsToChange[0].style.backgroundColor = "rgba(0,0,0,1)";
+    objectsToChange[1].style.color = "#5bc0eb;"
+    objectsToChange[2].style.color = "#FFFD98;"
+    objectsToChange[3].style.color = "#FFFD98;"
+    objectsToChange[4].forEach(p => p.style.color = "white");
+    objectsToChange[5].forEach(label => label.style.color = "white");
+    objectsToChange[6].forEach(button => {
+        button.style.color = "white";
+        button.disabled = false;
+    })
+    objectsToChange[7].style.color = "#FFFD98";
+    objectsToChange[7].textContent = "0";
+    objectsToChange[8].style.color = "#FFFD98";
+    objectsToChange[8].textContent = "0";
+    objectsToChange[9].style.color = "rgba(1, 255, 82)";
+    objectsToChange[9].textContent = "";
+}
+
+const myOldObjects = [];
+let objectsToChange = getRemainElements();
+const winAudio = new Audio("./Audio/Yay_Five_Nights_at_Freddys_short.wav");
+const loserAudio = new Audio("./Audio/Cartoon_Fail_Trumpet_Sound_effect.wav");
+const tieAudio = new Audio("./Audio/Fart_Sound_effect_short.wav");
+
+objectsToChange[6].forEach(button => button.addEventListener("click",function(e){
+    if(e.target.id === "restart") restartGame();
+    else{
+        let whoWon = game(getComputerChoice(),e.target.id);
+        if(whoWon === 1) {
+            let pointUser = parseInt(objectsToChange[7].textContent) + 1;
+            objectsToChange[7].textContent = pointUser.toString();
+            objectsToChange[9].textContent = "Point to the user!";
+            if(!loserAudio.paused) loserAudio.pause();
+            if(!tieAudio.paused) tieAudio.pause();
+            winAudio.currentTime = 0;
+            winAudio.play();
+            if(pointUser === 5) displayWinWindow(1) 
+        }
+        if(whoWon === 2) {
+            let pointComputer = parseInt(objectsToChange[8].textContent) + 1;
+            objectsToChange[8].textContent = pointComputer.toString();
+            objectsToChange[9].textContent = "Point to the computer!";
+            if(!winAudio.paused) winAudio.pause();
+            if(!tieAudio.paused) tieAudio.pause();
+            loserAudio.currentTime = 0;
+            loserAudio.play();
+            if(pointComputer === 5) displayWinWindow(2);
+        }
+        if(whoWon === 0) {
+            if(!loserAudio.paused) loserAudio.pause();
+            if(!winAudio.paused) winAudio.pause();
+            objectsToChange[9].textContent = "It's a TIE!!!";
+            tieAudio.currentTime = 0;
+            tieAudio.play();
+        }   
+    }
+}));
